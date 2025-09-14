@@ -8352,7 +8352,8 @@ def yazdir_teklif(teklif_id):
             return create_pdf_teklif(teklif, firma)
             
     except Exception as e:
-        return jsonify({'success': False, 'message': f'Hata: {str(e)}'})
+        # Hata durumunda 500 döndür
+        return jsonify({'success': False, 'message': f'Hata: {str(e)}'}), 500
 
 def create_word_teklif(teklif, firma):
     """Word formatında teklif oluşturur - Basitleştirilmiş format"""
@@ -8373,73 +8374,23 @@ def create_word_teklif(teklif, firma):
             section.left_margin = Inches(0.5)
             section.right_margin = Inches(0.5)
         
-        # Header (üst bilgi) ekle
-        try:
-            header_img_path = 'static/images/tek_ust1.jpg'
-            if os.path.exists(header_img_path):
-                # Header section'a resim ekle
-                section = doc.sections[0]
-                header = section.header
-                header_paragraph = header.paragraphs[0]
-                header_run = header_paragraph.add_run()
-                header_run.add_picture(header_img_path, width=Inches(7.5))
-                header_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        except Exception as e:
-            print(f"Header resmi eklenirken hata: {e}")
-        
-        # Footer (alt bilgi) - Sayfa numarası ekle
+        # Header (üst bilgi) ekle - sade metin (resim/field yok)
         try:
             section = doc.sections[0]
-            footer = section.footer
-            footer_paragraph = footer.paragraphs[0]
+            header = section.header
+            header_paragraph = header.paragraphs[0]
+            header_paragraph.text = "TEKLIF"
+            header_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        except Exception as e:
+            print(f"Header eklenirken hata: {e}")
+        
+        # Footer (alt bilgi) - sade metin (field yok)
+        try:
+            footer_paragraph = doc.sections[0].footer.paragraphs[0]
+            footer_paragraph.text = "AKARE EMISYON"
             footer_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            
-            # Sayfa numarası ekle - basit yöntem
-            footer_run = footer_paragraph.add_run()
-            footer_run.add_text("Sayfa ")
-            # Word'ün otomatik sayfa numarası field'ını ekle
-            from docx.oxml.shared import qn
-            from docx.oxml import OxmlElement
-            
-            # PAGE field ekle
-            fldChar1 = OxmlElement('w:fldChar')
-            fldChar1.set(qn('w:fldCharType'), 'begin')
-            fldChar1.set(qn('w:dirty'), 'true')
-            footer_run._r.append(fldChar1)
-            
-            instrText = OxmlElement('w:instrText')
-            instrText.text = "PAGE"
-            footer_run._r.append(instrText)
-            
-            fldChar2 = OxmlElement('w:fldChar')
-            fldChar2.set(qn('w:fldCharType'), 'end')
-            footer_run._r.append(fldChar2)
-            
-            footer_run.add_text(" / ")
-            
-            # NUMPAGES field ekle
-            fldChar3 = OxmlElement('w:fldChar')
-            fldChar3.set(qn('w:fldCharType'), 'begin')
-            fldChar3.set(qn('w:dirty'), 'true')
-            footer_run._r.append(fldChar3)
-            
-            instrText2 = OxmlElement('w:instrText')
-            instrText2.text = "NUMPAGES"
-            footer_run._r.append(instrText2)
-            
-            fldChar4 = OxmlElement('w:fldChar')
-            fldChar4.set(qn('w:fldCharType'), 'end')
-            footer_run._r.append(fldChar4)
-            
         except Exception as e:
             print(f"Footer eklenirken hata: {e}")
-            # Fallback: basit metin
-            try:
-                footer_paragraph = doc.sections[0].footer.paragraphs[0]
-                footer_paragraph.text = "Sayfa 1 / 5"
-                footer_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            except:
-                pass
         
         # 1. SAYFA - TEKLİF FORMU
         
