@@ -9,6 +9,7 @@ from uuid import uuid4
 import tempfile
 from datetime import datetime
 from io import BytesIO
+import traceback
 
 # Lazy loading - sadece gerektiğinde yükle
 pandas_loaded = False
@@ -8396,6 +8397,7 @@ def create_word_teklif(teklif, firma):
         
         # TEKLİF FORMU başlığı kaldırıldı
         
+        print("DEBUG: Word doc created, header/footer set")
         # 3 satır boşluk ekle
         doc.add_paragraph()
         doc.add_paragraph()
@@ -8935,6 +8937,7 @@ Hafize Demet Fazli'''
             
             # Belgeyi kaydet
             doc.save(temp_file_path)
+            print(f"DEBUG: doc saved to temp {temp_file_path}")
             
             # Sayfa adedi güncelle - daha doğru hesaplama
             try:
@@ -8959,6 +8962,7 @@ Hafize Demet Fazli'''
                 
                 # Güncellenmiş belgeyi tekrar kaydet
                 doc.save(temp_file_path)
+                print("DEBUG: doc re-saved after page estimation")
             except Exception as e:
                 print(f"Sayfa sayısı hesaplama hatası: {e}")
                 # Fallback: varsayılan sayfa sayısı
@@ -9002,6 +9006,7 @@ Hafize Demet Fazli'''
             print(f"DEBUG - Dosya adı: {dosya_adi}")
             
             # Dosyayı gönder
+            print(f"DEBUG: sending file {dosya_adi}")
             return send_file(
                 temp_file_path,
                 as_attachment=True,
@@ -9019,6 +9024,7 @@ Hafize Demet Fazli'''
             raise save_error
         
     except Exception as e:
+        print("ERROR: create_word_teklif failed:\n" + traceback.format_exc())
         # Hata durumunda 500 dön ve mesajı ilet
         return jsonify({'success': False, 'message': f'Word dosyası oluşturma hatası: {str(e)}'}), 500
 
