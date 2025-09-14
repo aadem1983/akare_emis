@@ -56,8 +56,14 @@ def load_docx():
         print(f"DEBUG: load_docx hatası: {e}")
         return None, None, None, None, None, None, None
 
-app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Session yönetimi için gizli anahtar önemlidir
+base_dir = os.path.dirname(__file__)
+app = Flask(
+    __name__,
+    template_folder=os.path.join(base_dir, 'templates'),
+    static_folder=os.path.join(base_dir, 'static')
+)
+# Production'da SECRET_KEY ortam değişkeninden alınır; yoksa geliştirme için güvenli olmayan bir yedek kullanılır
+app.secret_key = os.environ.get('SECRET_KEY', 'dev_fallback_secret')
 
 # RAM optimizasyonu için Flask ayarları
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
