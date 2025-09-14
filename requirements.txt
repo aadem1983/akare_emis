@@ -9,3 +9,4 @@ docx2pdf==0.1.8
 reportlab==4.0.7
 matplotlib==3.8.0
 numpy==1.26.0
+beautifulsoup4==4.12.3
