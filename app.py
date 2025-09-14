@@ -9019,7 +9019,8 @@ Hafize Demet Fazli'''
             raise save_error
         
     except Exception as e:
-        return jsonify({'success': False, 'message': f'Word dosyası oluşturma hatası: {str(e)}'})
+        # Hata durumunda 500 dön ve mesajı ilet
+        return jsonify({'success': False, 'message': f'Word dosyası oluşturma hatası: {str(e)}'}), 500
 
 def create_pdf_teklif(teklif, firma):
     """PDF formatında teklif oluşturur (HTML olarak)"""
