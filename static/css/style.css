@@ -51,6 +51,29 @@ body {
     overflow-x: auto;
 }
 
+/* Dropdown ve takvimlerin tablo üstünde görünmesi için z-index yükseltme */
+.dropdown-menu {
+    z-index: 2000 !important;
+}
+
+/* Tarih seçiciler (kullandığınız kitaplığa göre hepsini kapsar) */
+.flatpickr-calendar,
+.ui-datepicker,
+.bootstrap-datetimepicker-widget {
+    z-index: 2100 !important;
+}
+
+/* Select2 veya benzeri açılır listeler */
+.select2-container .select2-dropdown,
+.select2-container--bootstrap-5 .select2-dropdown {
+    z-index: 2200 !important;
+}
+
+/* Dikey taşma durumunda açılırların kesilmemesi için */
+.table-responsive {
+    overflow-y: visible !important;
+}
+
 /* Fix for form validation */
 .form-control.is-invalid {
     border-color: #dc3545;
